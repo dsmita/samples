@@ -7,20 +7,31 @@ public class SharedEntity {
 	private boolean isProduced;
 
 	public synchronized void produce(Integer i) {
-		if (!isProduced) {
-			setData(i);
-			isProduced = true;
-			System.out.println("Produce " + i);
+		if (isProduced) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
+		setData(i);
+		isProduced = true;
+		System.out.println("Produce " + i);
+		notify();
 	}
 
 	public synchronized Integer consume() {
-		if (isProduced) {
-			isProduced = false;
-			System.out.println("Consume " + data);
-			return data;
+		if (!isProduced) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
-		return 0;
+		isProduced = false;
+		System.out.println("Consume " + data);
+		notify();
+		return data;
 	}
 
 	public Integer getData() {
@@ -57,7 +68,6 @@ class Producer implements Runnable {
 			entity.produce(i);
 		}
 	}
-
 }
 
 class Consumer implements Runnable {
@@ -69,9 +79,9 @@ class Consumer implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println("Starting consumer");
-		Integer consume = entity.consume();
-		System.out.println("Consumer is Done " + consume);
+		for (int i = 1; i < 10; i++) {
+			entity.consume();
+		}
 	}
 
 }

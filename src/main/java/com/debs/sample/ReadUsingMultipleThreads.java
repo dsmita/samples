@@ -21,7 +21,7 @@ public class ReadUsingMultipleThreads {
 		myQueue.offer("uranus");
 		myQueue.offer("neptune");
 		myQueue.offer("pluto");
-		executorService = Executors.newFixedThreadPool(4);
+		executorService = Executors.newFixedThreadPool(10);
 	}
 	
 	public static void print(){
@@ -35,14 +35,14 @@ public class ReadUsingMultipleThreads {
 	}
 	
 	public static void main(String[] args){
-		for(int i=0;i<5;i++){
+		for(int i=0;i<10;i++){
 			executorService.execute(new Runnable() {
 		        public void run() {
 		            System.out.println("ThreadName :: " + Thread.currentThread().getName() + " " +myQueue.poll());
 		        }
 		    });
 
-		    executorService.shutdown();
+//		    executorService.shutdown();
 			
 		}
 		
